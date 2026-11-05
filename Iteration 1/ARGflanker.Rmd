@@ -1,0 +1,84 @@
+---
+title: "Characterizing ARG neighbourhoods with ARGflanker"
+author: "ARGflanker"
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
+vignette: >
+  %\VignetteIndexEntry{Characterizing ARG neighbourhoods with ARGflanker}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+# Overview
+
+`ARGflanker` characterizes the genes that sit next to antibiotic resistance
+genes (ARGs) in a metagenome, and uses that context to ask which ARGs look
+mobile. The question it is built around is: *what usually lives next to a
+resistance gene, and is a mobile genetic element (MGE) marker among the
+neighbours?*
+
+Short-read assembly frequently separates an ARG from its flanking element, so
+on-contig proximity alone under-counts mobility. `ARGflanker` therefore combines
+three views:
+
+1. **Per-ARG neighbourhood characterization** --- the categories, distances and
+   orientations of flanking genes (`characterizeNeighbors()`).
+2. **A dataset-wide signature** --- which categories are enriched around ARGs
+   (`neighborhoodProfile()`).
+3. **Linkage evidence** --- on-contig co-location (`screenMobility()`) plus
+   cross-contig read-pair bridging (`linkByReadPairs()`), merged into a mobility
+   score (`mobilityScore()`).
+
+This is a **hypothesis-generating screen**. A high score marks an ARG for
+follow-up (long reads, Hi-C, PCR), not a proven mobile gene.
+
+# Input
+
+```{r import}
+library(ARGflanker)
+gff <- system.file("extdata", "example.gff3", package = "ARGflanker")
+gr <- importAnnotations(gff)
+gr <- classifyGenes(gr)
+table(gr$category)
+```
+
+# Characterizing neighbours
+
+```{r neighbors}
+nb <- characterizeNeighbors(gr, window = 10000)
+nb[nb$arg_id == "c1_g3", ]        # blaTEM-1 context
+summarizeNeighbors(nb)
+```
+
+# Neighbourhood signature
+
+```{r profile}
+neighborhoodProfile(gr)
+```
+
+# Mobility screen
+
+```{r screen}
+pairs <- read.csv(
+    system.file("extdata", "example_readpairs.csv", package = "ARGflanker"))
+res <- MobilityScreen(gr, pairs = pairs, window = 10000)
+res
+res@scores
+```
+
+# Caveats
+
+Keyword classification here is a placeholder; in practice replace it with hits
+against curated references (CARD/Resfams for ARGs, ISfinder/mobileOG for MGE
+markers). Scores are priors for triage, and absence of an MGE neighbour is weak
+evidence of non-mobility because of assembly fragmentation.
+
+```{r session}
+sessionInfo()
+```

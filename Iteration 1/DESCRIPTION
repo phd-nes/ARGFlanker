@@ -1,0 +1,55 @@
+Package: ARGflanker
+Title: Prediction of Mobile Genetic Element Linkage to Antibiotic
+    Resistance Genes from Short-Read Metagenomes
+Version: 0.99.0
+Authors@R:
+    person(given = "Firstname",
+           family = "Lastname",
+           role = c("aut", "cre"),
+           email = "700049478@uaeu.ac.ae",
+           comment = c(ORCID = "0000-0000-0000-0000"))
+Description: ARGflanker screens metagenomic gene predictions for antibiotic
+    resistance genes (ARGs) that are likely to be mobile, by examining the
+    genes that flank them. Rather than relying on a single contig physically
+    joining an ARG to a mobile genetic element (MGE) marker (integrase,
+    transposase, recombinase, insertion sequence or plasmid replication
+    gene), which short-read assembly frequently breaks, it combines three
+    lines of evidence: co-location on the same contig within a distance
+    window, a data-derived neighbourhood signature of the gene categories
+    that typically surround ARGs, and read-pair bridging that links an ARG
+    to an MGE marker even when the two sit on separate contigs. The output
+    is a per-ARG mobility score with its supporting evidence, intended as a
+    hypothesis-generating screen rather than proof of mobility.
+License: Artistic-2.0
+Encoding: UTF-8
+Depends:
+    R (>= 4.4.0),
+    GenomicRanges
+Imports:
+    methods,
+    stats,
+    S4Vectors,
+    IRanges,
+    GenomeInfoDb,
+    rtracklayer,
+    BiocGenerics
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    BiocStyle,
+    ggplot2
+biocViews:
+    Metagenomics,
+    Microbiome,
+    Sequencing,
+    GenePrediction,
+    Annotation,
+    Classification,
+    Software
+URL: https://github.com/USERNAME/ARGflanker
+BugReports: https://github.com/USERNAME/ARGflanker/issues
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+RoxygenNote: 7.3.1
+LazyData: false
